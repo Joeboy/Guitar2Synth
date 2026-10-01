@@ -1,0 +1,33 @@
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix lv2: <http://lv2plug.in/ns/lv2core#> .
+@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+
+<urn:guitarsynthplugins:Guitar2MIDI>
+    a lv2:AnalyserPlugin ;
+    doap:name "Guitar2MIDI" ;
+    doap:description "Monophonic guitar to MIDI notes on channel 1." ;
+    lv2:requiredFeature urid:map ;
+    lv2:optionalFeature lv2:hardRTCapable ;
+    lv2:port [
+        a lv2:InputPort , lv2:AudioPort ;
+        lv2:index 0 ;
+        lv2:symbol "input" ;
+        lv2:name "Guitar input"
+    ] , [
+        a lv2:InputPort , lv2:ControlPort ;
+        lv2:index 1 ;
+        lv2:symbol "threshold" ;
+        lv2:name "Gate threshold" ;
+        lv2:default 0.01 ;
+        lv2:minimum 0.0005 ;
+        lv2:maximum 0.2
+    ] , [
+        a lv2:OutputPort , atom:AtomPort ;
+        atom:bufferType atom:Sequence ;
+        atom:supports midi:MidiEvent ;
+        lv2:index 2 ;
+        lv2:symbol "midi_out" ;
+        lv2:name "MIDI output"
+    ] .

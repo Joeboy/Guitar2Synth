@@ -1,11 +1,12 @@
 //! Guitar2GateTrigger LV2 plugin.
 #![cfg_attr(target_os = "none", no_std)]
 
-#[cfg(not(target_os = "none"))]
-use std::boxed::Box;
 #[cfg(target_os = "none")]
 use core::panic::PanicInfo;
+#[cfg(not(target_os = "none"))]
+use std::boxed::Box;
 
+#[path = "../../../dsp/gate_trigger.rs"]
 mod detector;
 
 use core::ffi::{c_char, c_void};

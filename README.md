@@ -1,8 +1,7 @@
 # Guitar Synth Plugins
 
 LV2 plugins to help convert a monophonic guitar signal into things a synth can
-use. The current plugins output frequency (Hz), Gate, and Trigger. MIDI notes
-may follow.
+use. The current plugins output frequency (Hz), Gate, Trigger, and MIDI notes.
 
 Designed around the assumption it'll need to run on very low-end hardware. If
 you're using a decent computer there might be better things available.
@@ -39,12 +38,19 @@ The `threshold` control defaults to 0.01 (relative to full-scale input) and can
 be adjusted from 0.0005 to 0.2. Gate closes when the fast envelope falls below
 half that threshold. Lower the threshold for a quiet input; raise it if noise
 holds the gate open. In a modular patch, connect the same guitar audio input to
-both plugins, then connect `gate` and `trigger` to the envelope's CV inputs.
-The gate may open before Guitar2Frequency has produced its first estimate.
+both plugins, then connect `gate` and `trigger` to the envelope's CV inputs. The
+gate may open before Guitar2Frequency has produced its first estimate.
+
+## Guitar2MIDI
+
+Converts a mono guitar input into monophonic MIDI Note On and Note Off events.
+Notes are rounded to the nearest semitone on MIDI channel 1 with fixed
+velocity 100. The `threshold` control has the same 0.01 default and range as
+Guitar2GateTrigger. There is no pitch bend or velocity tracking in this version.
 
 ## Building
 
-Build both desktop LV2 bundles in `build/`:
+Build all desktop LV2 bundles in `build/`:
 
 ```sh
 make
@@ -53,7 +59,7 @@ make
 Set `BUNDLE_ROOT` to change the output location, for example
 `make BUNDLE_ROOT="$HOME/.lv2"` to install both for the current user.
 
-Build both PicoLV2 bundles at `build/picolv2/` with `make bundle-pico`. Set
+Build all PicoLV2 bundles at `build/picolv2/` with `make bundle-pico`. Set
 `PICOLV2_SDK_DIR` to the PicoLV2 SDK directory if it is not at the Makefile's
 default `../../sdk`, for example:
 

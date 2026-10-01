@@ -9,3 +9,7 @@ version = "0.1.0"
 [[package]]
 name = "guitar2gatetrigger"
 version = "0.1.0"
+
+[[package]]
+name = "guitar2midi"
+version = "0.1.0"

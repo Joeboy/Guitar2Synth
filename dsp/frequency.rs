@@ -66,13 +66,14 @@ impl FrequencyDetector {
         self.frequency
     }
 
-    pub fn push(&mut self, sample: f32) {
+    /// Returns true when a new frequency estimate has been calculated.
+    pub fn push(&mut self, sample: f32) -> bool {
         // Treat corrupt input as silence; it must not poison filter state.
         let sample = if sample.is_finite() { sample } else { 0.0 };
         self.lowpass += self.lowpass_alpha * (sample - self.lowpass);
         self.decimation_phase += 1;
         if self.decimation_phase < self.decimation {
-            return;
+            return false;
         }
         self.decimation_phase = 0;
 
@@ -83,7 +84,9 @@ impl FrequencyDetector {
         if self.filled == HISTORY && self.since_analysis >= HOP {
             self.since_analysis = 0;
             self.analyse();
+            return true;
         }
+        false
     }
 
     fn analyse(&mut self) {

@@ -1,0 +1,8 @@
+[package]
+name = "guitar2midi"
+version = "0.1.0"
+edition = "2021"
+description = "Low-cost monophonic guitar to MIDI LV2 plugin"
+
+[lib]
+crate-type = ["cdylib"]

@@ -1,5 +1,5 @@
 [workspace]
-members = ["plugins/guitar2frequency", "plugins/guitar2gatetrigger"]
+members = ["plugins/guitar2frequency", "plugins/guitar2gatetrigger", "plugins/guitar2midi"]
 resolver = "2"
 
 [profile.release]
