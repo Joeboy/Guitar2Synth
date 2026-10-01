@@ -1,10 +1,28 @@
 //! Guitar2Frequency LV2 plugin.
+#![cfg_attr(target_os = "none", no_std)]
+
+#[cfg(not(target_os = "none"))]
+use std::boxed::Box;
+#[cfg(target_os = "none")]
+use core::panic::PanicInfo;
 
 mod frequency;
 use frequency::FrequencyDetector;
 
 use core::ffi::{c_char, c_void};
 use core::ptr;
+
+#[cfg(target_os = "none")]
+unsafe extern "C" {
+    fn malloc(size: usize) -> *mut c_void;
+    fn free(ptr: *mut c_void);
+}
+
+#[cfg(target_os = "none")]
+#[panic_handler]
+fn panic(_: &PanicInfo) -> ! {
+    loop { core::hint::spin_loop(); }
+}
 
 const URI: &[u8] = b"urn:guitarsynthplugins:Guitar2Frequency\0";
 
@@ -44,11 +62,22 @@ unsafe extern "C" fn instantiate(
     let Some(detector) = FrequencyDetector::new(sample_rate as f32) else {
         return ptr::null_mut();
     };
-    Box::into_raw(Box::new(Plugin {
+    let plugin = Plugin {
         input: ptr::null(),
         output: ptr::null_mut(),
         detector,
-    })) as *mut c_void
+    };
+    #[cfg(target_os = "none")]
+    {
+        let memory = malloc(core::mem::size_of::<Plugin>()).cast::<Plugin>();
+        if memory.is_null() {
+            return ptr::null_mut();
+        }
+        ptr::write(memory, plugin);
+        memory.cast()
+    }
+    #[cfg(not(target_os = "none"))]
+    { Box::into_raw(Box::new(plugin)).cast() }
 }
 
 unsafe extern "C" fn connect_port(instance: *mut c_void, port: u32, data: *mut c_void) {
@@ -78,7 +107,13 @@ unsafe extern "C" fn run(instance: *mut c_void, sample_count: u32) {
 }
 
 unsafe extern "C" fn cleanup(instance: *mut c_void) {
-    drop(Box::from_raw(instance as *mut Plugin));
+    #[cfg(target_os = "none")]
+    {
+        ptr::drop_in_place(instance.cast::<Plugin>());
+        free(instance);
+    }
+    #[cfg(not(target_os = "none"))]
+    { drop(Box::from_raw(instance.cast::<Plugin>())); }
 }
 
 unsafe extern "C" fn extension_data(_uri: *const c_char) -> *const c_void {

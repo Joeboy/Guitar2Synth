@@ -72,7 +72,7 @@ impl FrequencyDetector {
         if self.decimation_phase < self.decimation { return; }
         self.decimation_phase = 0;
 
-        self.history[self.cursor] = self.lowpass;
+        self.history[self.cursor & (HISTORY - 1)] = self.lowpass;
         self.cursor = (self.cursor + 1) & (HISTORY - 1);
         self.filled = (self.filled + 1).min(HISTORY);
         self.since_analysis += 1;
