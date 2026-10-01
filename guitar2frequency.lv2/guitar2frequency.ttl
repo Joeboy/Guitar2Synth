@@ -1,0 +1,23 @@
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix lv2: <http://lv2plug.in/ns/lv2core#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+
+<urn:guitarsynthplugins:Guitar2Frequency>
+    a lv2:AnalyserPlugin ;
+    doap:name "Guitar2Frequency" ;
+    doap:description "Monophonic guitar frequency in Hz. Outputs zero during silence or uncertain tracking." ;
+    lv2:optionalFeature lv2:hardRTCapable ;
+    lv2:port [
+        a lv2:InputPort , lv2:AudioPort ;
+        lv2:index 0 ;
+        lv2:symbol "input" ;
+        lv2:name "Guitar input"
+    ] , [
+        a lv2:OutputPort , lv2:ControlPort ;
+        lv2:index 1 ;
+        lv2:symbol "frequency_hz" ;
+        lv2:name "Frequency" ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1300.0 ;
+        units:unit units:hz
+    ] .
