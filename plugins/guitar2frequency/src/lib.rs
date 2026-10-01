@@ -35,7 +35,14 @@ pub struct Lv2Feature {
 #[repr(C)]
 pub struct Lv2Descriptor {
     uri: *const c_char,
-    instantiate: Option<unsafe extern "C" fn(*const Lv2Descriptor, f64, *const c_char, *const *const Lv2Feature) -> *mut c_void>,
+    instantiate: Option<
+        unsafe extern "C" fn(
+            *const Lv2Descriptor,
+            f64,
+            *const c_char,
+            *const *const Lv2Feature,
+        ) -> *mut c_void,
+    >,
     connect_port: Option<unsafe extern "C" fn(*mut c_void, u32, *mut c_void)>,
     activate: Option<unsafe extern "C" fn(*mut c_void)>,
     run: Option<unsafe extern "C" fn(*mut c_void, u32)>,
@@ -133,7 +140,11 @@ static DESCRIPTOR: Lv2Descriptor = Lv2Descriptor {
 
 #[no_mangle]
 pub extern "C" fn lv2_descriptor(index: u32) -> *const Lv2Descriptor {
-    if index == 0 { &DESCRIPTOR } else { ptr::null() }
+    if index == 0 {
+        &DESCRIPTOR
+    } else {
+        ptr::null()
+    }
 }
 
 #[cfg(test)]
@@ -148,7 +159,10 @@ mod tests {
             assert!(lv2_descriptor(1).is_null());
             let features = [ptr::null()];
             let instance = ((*descriptor).instantiate.unwrap())(
-                descriptor, 48_000.0, ptr::null(), features.as_ptr(),
+                descriptor,
+                48_000.0,
+                ptr::null(),
+                features.as_ptr(),
             );
             assert!(!instance.is_null());
             let mut output = -1.0f32;

@@ -1,11 +1,6 @@
-[package]
-name = "guitar2frequency"
-version = "0.1.0"
-edition = "2021"
-description = "Low-cost monophonic guitar frequency detector as an LV2 plugin"
-
-[lib]
-crate-type = ["cdylib"]
+[workspace]
+members = ["plugins/guitar2frequency", "plugins/guitar2gatetrigger"]
+resolver = "2"
 
 [profile.release]
 opt-level = 3

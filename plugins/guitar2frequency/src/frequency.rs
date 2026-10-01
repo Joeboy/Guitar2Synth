@@ -62,14 +62,18 @@ impl FrequencyDetector {
         self.frequency = 0.0;
     }
 
-    pub fn frequency_hz(&self) -> f32 { self.frequency }
+    pub fn frequency_hz(&self) -> f32 {
+        self.frequency
+    }
 
     pub fn push(&mut self, sample: f32) {
         // Treat corrupt input as silence; it must not poison filter state.
         let sample = if sample.is_finite() { sample } else { 0.0 };
         self.lowpass += self.lowpass_alpha * (sample - self.lowpass);
         self.decimation_phase += 1;
-        if self.decimation_phase < self.decimation { return; }
+        if self.decimation_phase < self.decimation {
+            return;
+        }
         self.decimation_phase = 0;
 
         self.history[self.cursor & (HISTORY - 1)] = self.lowpass;
@@ -111,7 +115,9 @@ impl FrequencyDetector {
             cumulative += difference;
             let normalized = if cumulative > 0.0 {
                 difference * lag as f32 / cumulative
-            } else { 1.0 };
+            } else {
+                1.0
+            };
 
             if let Some((candidate_lag, before, at)) = candidate {
                 if normalized >= at {
@@ -133,9 +139,15 @@ impl FrequencyDetector {
         let denominator = before - 2.0 * at + after;
         let offset = if denominator.abs() > 1e-8 {
             (0.5 * (before - after) / denominator).clamp(-0.5, 0.5)
-        } else { 0.0 };
+        } else {
+            0.0
+        };
         let frequency = self.rate / (lag as f32 + offset);
-        self.frequency = if (MIN_HZ..=MAX_HZ).contains(&frequency) { frequency } else { 0.0 };
+        self.frequency = if (MIN_HZ..=MAX_HZ).contains(&frequency) {
+            frequency
+        } else {
+            0.0
+        };
     }
 }
 
@@ -163,7 +175,11 @@ mod tests {
                 let mut detector = FrequencyDetector::new(rate).unwrap();
                 feed_tone(&mut detector, rate, hz, false);
                 let error = (detector.frequency_hz() - hz).abs() / hz;
-                assert!(error < 0.015, "rate={rate}, hz={hz}, detected={}", detector.frequency_hz());
+                assert!(
+                    error < 0.015,
+                    "rate={rate}, hz={hz}, detected={}",
+                    detector.frequency_hz()
+                );
             }
         }
     }
@@ -172,7 +188,11 @@ mod tests {
     fn tracks_missing_fundamental() {
         let mut detector = FrequencyDetector::new(48_000.0).unwrap();
         feed_tone(&mut detector, 48_000.0, 110.0, true);
-        assert!((detector.frequency_hz() - 110.0).abs() < 2.0, "detected={}", detector.frequency_hz());
+        assert!(
+            (detector.frequency_hz() - 110.0).abs() < 2.0,
+            "detected={}",
+            detector.frequency_hz()
+        );
     }
 
     #[test]
@@ -180,7 +200,9 @@ mod tests {
         let mut detector = FrequencyDetector::new(48_000.0).unwrap();
         feed_tone(&mut detector, 48_000.0, 220.0, false);
         assert!(detector.frequency_hz() > 0.0);
-        for _ in 0..4_000 { detector.push(f32::NAN); }
+        for _ in 0..4_000 {
+            detector.push(f32::NAN);
+        }
         assert_eq!(detector.frequency_hz(), 0.0);
         detector.reset();
         assert_eq!(detector.frequency_hz(), 0.0);

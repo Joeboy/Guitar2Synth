@@ -1,0 +1,8 @@
+[package]
+name = "guitar2gatetrigger"
+version = "0.1.0"
+edition = "2021"
+description = "Low-cost guitar gate and trigger LV2 plugin"
+
+[lib]
+crate-type = ["cdylib"]
